@@ -1,4 +1,4 @@
-# GCal Busy Sync
+# gcalbusysync
 
 Syncs busy/free status across multiple Google Calendar accounts. For each account, it reads events from its primary calendar and creates native **Out of Office** blocks on all other accounts — so each calendar reflects when you're unavailable, without exposing any event details.
 
@@ -33,7 +33,7 @@ For **each** Google account you want to sync:
 ### 2. Python environment
 
 ```bash
-cd "/path/to/GCal Busy Sync"
+cd "/path/to/gcalbusysync"
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
@@ -124,8 +124,8 @@ Check `~/.gcalbusysync/logs/gcalsync.log` for output and verify Out of Office bl
 LaunchAgent handles sleep/wake reliably — it catches up missed intervals when the machine wakes, unlike cron which skips them.
 
 Edit `com.gcalbusysync.plist` and update the two paths to match your environment:
-- `/path/to/GCal Busy Sync/.venv/bin/python3` — the Python interpreter in your venv
-- `/path/to/GCal Busy Sync/main.py` — the full path to `main.py`
+- `/path/to/gcalbusysync/.venv/bin/python3` — the Python interpreter in your venv
+- `/path/to/gcalbusysync/main.py` — the full path to `main.py`
 
 The `StandardOutPath` and `StandardErrorPath` should be updated to point to `~/.gcalbusysync/logs/gcalsync.log` (or any path you prefer for LaunchAgent output).
 
@@ -152,14 +152,14 @@ launchctl unload ~/Library/LaunchAgents/com.gcalbusysync.plist
 crontab -e
 ```
 
-Add (replacing `/path/to/GCal Busy Sync` with your actual project directory):
+Add (replacing `/path/to/gcalbusysync` with your actual project directory):
 ```
-*/15 * * * * "/path/to/GCal Busy Sync/.venv/bin/python3" "/path/to/GCal Busy Sync/main.py" sync
+*/15 * * * * "/path/to/gcalbusysync/.venv/bin/python3" "/path/to/gcalbusysync/main.py" sync
 ```
 
 App output goes to `~/.gcalbusysync/logs/gcalsync.log` automatically. If you also want cron-level errors captured separately:
 ```
-*/15 * * * * "/path/to/GCal Busy Sync/.venv/bin/python3" "/path/to/GCal Busy Sync/main.py" sync >> ~/.gcalbusysync/logs/cron.log 2>&1
+*/15 * * * * "/path/to/gcalbusysync/.venv/bin/python3" "/path/to/gcalbusysync/main.py" sync >> ~/.gcalbusysync/logs/cron.log 2>&1
 ```
 
 ---
@@ -245,7 +245,7 @@ The `decline_message` is the text sent with each declined invitation. It is only
 
 **In the repository (tracked by git):**
 ```
-GCal Busy Sync/
+gcalbusysync/
 ├── gcalsync/
 │   ├── auth.py             # OAuth2 credential management
 │   ├── calendar_client.py  # Google Calendar API wrapper

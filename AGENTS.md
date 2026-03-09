@@ -1,4 +1,4 @@
-# AGENTS.md — GCal Busy Sync
+# AGENTS.md — gcalbusysync
 
 Conventions, patterns, and hard-won API discoveries for AI agents working on this codebase.
 
@@ -26,7 +26,7 @@ Or update your crontab manually if you use cron instead.
 
 ## Project purpose
 
-GCal Busy Sync syncs busy/free status across multiple Google Calendar accounts in a many-to-many mesh. For each account it reads events from the source calendar and creates native **Out of Office** (`outOfOffice`) blocks on all other accounts' target calendars — so each calendar reflects unavailability from all others, without leaking event details. It runs as a scheduled cron job or macOS LaunchAgent.
+gcalbusysync syncs busy/free status across multiple Google Calendar accounts in a many-to-many mesh. For each account it reads events from the source calendar and creates native **Out of Office** (`outOfOffice`) blocks on all other accounts' target calendars — so each calendar reflects unavailability from all others, without leaking event details. It runs as a scheduled cron job or macOS LaunchAgent.
 
 ---
 
@@ -34,7 +34,7 @@ GCal Busy Sync syncs busy/free status across multiple Google Calendar accounts i
 
 **Repo (tracked by git) — source code only:**
 ```
-GCal Busy Sync/
+gcalbusysync/
 ├── gcalsync/
 │   ├── auth.py             # OAuth2 credential management
 │   ├── calendar_client.py  # Google Calendar API wrapper (most complex module)

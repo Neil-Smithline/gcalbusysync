@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GCal Busy Sync
+gcalbusysync
 
 Syncs busy/free status across multiple Google Calendar accounts by creating
 Out of Office blocks so each account reflects unavailability from all others,
@@ -116,7 +116,7 @@ def cmd_cleanup(config) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="GCal Busy Sync — sync busy/free status across Google Calendar accounts"
+        description="gcalbusysync — sync busy/free status across Google Calendar accounts"
     )
     parser.add_argument(
         "--config",

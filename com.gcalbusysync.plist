@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-  macOS LaunchAgent for GCal Busy Sync
+  macOS LaunchAgent for gcalbusysync
   Runs the sync every 15 minutes, reliably catching up after sleep/wake.
 
   Installation:
@@ -24,13 +24,13 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/neil/Code/GCal Busy Sync/.venv/bin/python3</string>
-    <string>/Users/neil/Code/GCal Busy Sync/main.py</string>
+    <string>/Users/neil/Code/gcalbusysync/.venv/bin/python3</string>
+    <string>/Users/neil/Code/gcalbusysync/main.py</string>
     <string>sync</string>
   </array>
 
   <key>WorkingDirectory</key>
-  <string>/Users/neil/Code/GCal Busy Sync</string>
+  <string>/Users/neil/Code/gcalbusysync</string>
 
   <!-- Run every 900 seconds (15 minutes) -->
   <key>StartInterval</key>
