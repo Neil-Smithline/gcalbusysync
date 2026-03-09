@@ -40,11 +40,8 @@
   <key>RunAtLoad</key>
   <false/>
 
-  <!-- Log stdout and stderr to the same log file as the app -->
-  <key>StandardOutPath</key>
-  <string>/Users/neil/.gcalbusysync/logs/gcalsync.log</string>
-  <key>StandardErrorPath</key>
-  <string>/Users/neil/.gcalbusysync/logs/gcalsync.log</string>
+  <!-- Logging is handled entirely by Python's RotatingFileHandler writing to
+       ~/.gcalbusysync/logs/gcalsync.log — no need to redirect stdout here. -->
 
   <key>ProcessType</key>
   <string>Background</string>

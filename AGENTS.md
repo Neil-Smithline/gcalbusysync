@@ -106,7 +106,13 @@ The API rejects `outOfOffice` events with other status values. Always use `"stat
 
 Do not set `transparency` on `outOfOffice` events — the field is silently ignored. OOO events are always treated as busy by the API regardless of this field.
 
-### 5. `privateExtendedProperties` ARE persisted on `outOfOffice` events
+### 5. `orderBy` prevents `nextSyncToken` from being returned
+
+When calling `events.list` for a full sync, do **not** set the `orderBy` parameter. Google Calendar omits `nextSyncToken` from the response when `orderBy` is present, which means the sync token is never stored and every subsequent run falls back to a full sync.
+
+**Do not use `orderBy` in `list_events_full`.** Event order doesn't matter for sync correctness since each event is processed independently.
+
+### 6. `privateExtendedProperties` ARE persisted on `outOfOffice` events
 
 Despite the filter not working (quirk #2 above), the properties themselves **are** stored correctly and returned in `events.list` results. Client-side filtering on the returned dicts works correctly — it's only the server-side `?privateExtendedProperty=` query parameter that fails.
 

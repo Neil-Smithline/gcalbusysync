@@ -99,7 +99,8 @@ class CalendarClient:
                 timeMin=time_min.isoformat(),
                 timeMax=time_max.isoformat(),
                 singleEvents=True,  # expand recurring events into individual instances
-                orderBy="startTime",
+                # orderBy is intentionally omitted: Google Calendar omits nextSyncToken
+                # from the response when orderBy is set, breaking incremental sync.
                 pageToken=page_token,
             )
             resp = self.service.events().list(**params).execute()
@@ -109,6 +110,12 @@ class CalendarClient:
             if not page_token:
                 break
 
+        if next_sync_token is None:
+            logger.warning(
+                "Full sync for %s: API did not return a nextSyncToken — "
+                "incremental sync will not be possible; next run will be a full sync",
+                self.account.id,
+            )
         logger.debug(
             "Full sync for %s: fetched %d events", self.account.id, len(all_events)
         )
