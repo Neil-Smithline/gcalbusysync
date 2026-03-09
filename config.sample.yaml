@@ -1,0 +1,53 @@
+# GCal Busy Sync — sample configuration
+#
+# This file is copied to ~/.gcalbusysync/config.yaml on first run.
+# Edit that copy to add your accounts. See README.md for full setup instructions.
+
+sync:
+  days_ahead: 30  # How many days ahead to sync (default: 30)
+  days_behind: 1  # How many days back to look for cleanup (default: 1)
+
+  # ooo: controls whether synced Out of Office blocks automatically decline meetings.
+  # This is the global default, applied to all accounts unless overridden per-account.
+  # If this section is omitted entirely, Google uses each account's personal setting.
+  #
+  # auto_decline values:
+  #   "none" — OOO block is created but meetings are NOT automatically declined
+  #   "all"  — All conflicting meeting invitations are automatically declined
+  #   "new"  — Only new (not yet responded-to) conflicting invitations are declined
+  #
+  # ooo:
+  #   auto_decline: "none"
+  #   decline_message: "I am out of the office and will respond when I return."
+
+accounts:
+  # Minimum required: just the id. Everything else is derived automatically.
+  #
+  # Given id: "you@example.com", the defaults are:
+  #   name:             "you@example.com"
+  #   credentials_file: ~/.gcalbusysync/credentials/you_example_com_credentials.json
+  #   token_file:       ~/.gcalbusysync/credentials/you_example_com_token.json
+  #
+  # Non-alphanumeric characters (dots, @, hyphens) in the id are replaced
+  # with underscores in the derived filenames.
+
+  - id: "you@gmail.com"
+
+  - id: "you@yourwork.com"
+
+  # Optional overrides — uncomment any field to override the derived default:
+  # - id: "example@gmail.com"
+  #   name: "My Personal Account"                          # display name
+  #   credentials_file: "/custom/path/credentials.json"   # absolute path
+  #   token_file: "/custom/path/token.json"               # absolute path
+  #   source_calendar: "primary"   # which calendar to read events from
+  #   target_calendar: "primary"   # which calendar to write OOO blocks to
+  #   ooo:                         # override global ooo setting for this account only
+  #     auto_decline: "all"
+  #     decline_message: "Unavailable — this meeting has been automatically declined."
+
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  # log_file defaults to: ~/.gcalbusysync/logs/gcalsync.log
+  # max_bytes: 5242880   # 5 MB per log file before rotation
+  # backup_count: 3      # number of rotated log files to keep

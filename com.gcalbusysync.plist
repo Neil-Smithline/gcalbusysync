@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  macOS LaunchAgent for GCal Busy Sync
+  Runs the sync every 15 minutes, reliably catching up after sleep/wake.
+
+  Installation:
+    cp com.gcalbusysync.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.gcalbusysync.plist
+
+  To stop:
+    launchctl unload ~/Library/LaunchAgents/com.gcalbusysync.plist
+
+  To check status:
+    launchctl list | grep gcalbusysync
+
+  To run manually via launchd (for testing):
+    launchctl start com.gcalbusysync
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.gcalbusysync</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/neil/Code/GCal Busy Sync/.venv/bin/python3</string>
+    <string>/Users/neil/Code/GCal Busy Sync/main.py</string>
+    <string>sync</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/neil/Code/GCal Busy Sync</string>
+
+  <!-- Run every 900 seconds (15 minutes) -->
+  <key>StartInterval</key>
+  <integer>900</integer>
+
+  <!-- Do not run immediately on load - wait for first interval -->
+  <key>RunAtLoad</key>
+  <false/>
+
+  <!-- Log stdout and stderr to the same log file as the app -->
+  <key>StandardOutPath</key>
+  <string>/Users/neil/.gcalbusysync/logs/gcalsync.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/neil/.gcalbusysync/logs/gcalsync.log</string>
+
+  <key>ProcessType</key>
+  <string>Background</string>
+</dict>
+</plist>

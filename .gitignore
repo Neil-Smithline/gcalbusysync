@@ -1,0 +1,18 @@
+# Runtime files — all live in ~/.gcalbusysync/, not in the repo
+# Ignore them here in case someone accidentally places them in the project dir
+config.yaml
+credentials/
+sync_state.json
+logs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+dist/
+build/
+
+# macOS
+.DS_Store
