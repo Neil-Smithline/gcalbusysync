@@ -7,7 +7,7 @@ Runs as a scheduled cron job or macOS LaunchAgent, syncing every 15 minutes.
 ## How it works
 
 - **Many-to-many mesh**: every account blocks every other account.
-- **No event details leaked**: OOO blocks contain only the title "Out of Office".
+- **No event details leaked**: OOO blocks contain only the title "OOO".
 - **Automatic cleanup**: when a source event is deleted, changed to "free", or cancelled, the corresponding OOO block is removed from all other calendars.
 - **Incremental sync**: uses Google Calendar's `nextSyncToken` to fetch only changed events on subsequent runs — fast and quota-friendly.
 - **Tracking via `privateExtendedProperties`**: synced blocks store the source event ID and account as private metadata (invisible in the Google Calendar UI), so they can always be found and cleaned up.
