@@ -154,13 +154,10 @@ crontab -e
 
 Add (replacing `/path/to/gcalbusysync` with your actual project directory):
 ```
-*/15 * * * * "/path/to/gcalbusysync/.venv/bin/python3" "/path/to/gcalbusysync/main.py" sync
+*/15 * * * * "/path/to/gcalbusysync/.venv/bin/python3" "/path/to/gcalbusysync/main.py" sync > /dev/null 2>&1
 ```
 
-App output goes to `~/.gcalbusysync/logs/gcalsync.log` automatically. If you also want cron-level errors captured separately:
-```
-*/15 * * * * "/path/to/gcalbusysync/.venv/bin/python3" "/path/to/gcalbusysync/main.py" sync >> ~/.gcalbusysync/logs/cron.log 2>&1
-```
+All logging goes to `~/.gcalbusysync/logs/gcalsync.log` automatically. The `> /dev/null 2>&1` redirect is required — without it, cron will attempt to email you the console output on every run.
 
 ---
 
