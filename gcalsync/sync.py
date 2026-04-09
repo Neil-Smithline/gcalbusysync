@@ -243,6 +243,32 @@ def _sync_source_account(
             contained=event["id"] in contained_ids,
         )
 
+    # When skip_contained_events is on and a containing event was just deleted,
+    # the inner event doesn't appear in changed_events (it hasn't changed), so it
+    # would miss getting an OOO block. Fix: re-fetch all source events and process
+    # any that weren't already handled, using the current containment picture.
+    if skip_contained_events and not is_full_sync:
+        cancelled = [e for e in changed_events if e.get("status") == "cancelled"]
+        if cancelled:
+            logger.debug(
+                "Account %s: %d cancelled event(s) — re-fetching source events "
+                "to find newly uncontained events",
+                source_account.id, len(cancelled),
+            )
+            all_source_events, _ = source_client.list_events_full(time_min, time_max)
+            new_contained_ids = _build_contained_event_ids(all_source_events)
+            changed_event_ids = {e["id"] for e in changed_events}
+            for event in all_source_events:
+                if event["id"] not in changed_event_ids:
+                    _process_event(
+                        event=event,
+                        source_account=source_account,
+                        target_accounts=target_accounts,
+                        clients=clients,
+                        global_ooo=global_ooo,
+                        contained=event["id"] in new_contained_ids,
+                    )
+
     if is_full_sync:
         # On a full sync the API omits cancelled events, so we must reconcile:
         # any OOO block whose source event isn't in the live set is an orphan.
