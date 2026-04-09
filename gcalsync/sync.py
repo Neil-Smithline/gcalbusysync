@@ -29,6 +29,9 @@ def is_busy_source(event: dict) -> bool:
     - status must be "confirmed" or "tentative" (not "cancelled")
     - transparency must be "opaque" (the default when not explicitly set)
       A "transparent" event means the user has marked themselves as free.
+    - The calendar owner must not have declined the event. When a user declines
+      a meeting invitation it remains on their calendar but they are not busy.
+      The owner is identified by the attendee entry with `self: true`.
     """
     # Skip events gcalsync created - without this, OOO blocks written to a
     # target calendar would be read back as source events and re-synced to
@@ -44,6 +47,11 @@ def is_busy_source(event: dict) -> bool:
         return False
     if transparency == "transparent":
         return False
+    # Skip events the calendar owner has declined. The owner's attendee entry
+    # is marked with `self: true`; a declined event is not a busy period.
+    for attendee in event.get("attendees", []):
+        if attendee.get("self") and attendee.get("responseStatus") == "declined":
+            return False
     return True
 
 
