@@ -201,6 +201,7 @@ API value mapping (in `_AUTO_DECLINE_MAP` in `calendar_client.py`):
 - **Error isolation**: `_process_event()` wraps each target account in `try/except` so one account failure doesn't abort processing of others. The same pattern is used in `run_sync()` per source account.
 - **404 on delete is silently ignored**: `delete_busy_block()` swallows HTTP 404 — the block being already gone is a normal race condition, not an error.
 - **0-minute events are skipped**: Events where `start == end` (used as reminders in Google Calendar) are excluded by `is_busy_source()` and never synced as OOO blocks.
+- **Contained-event skipping**: When `skip_contained_events: true` (the default), events fully contained within a strictly larger concurrent event on the same source calendar are not synced as OOO blocks. The check runs on whatever `changed_events` are available (full or incremental sync). During full sync, any previously-created OOO blocks for now-contained events are deleted via the normal `should_sync=False` path in `_process_event`. Implemented via `_build_contained_event_ids()` in `sync.py`, which uses `_event_time_to_datetime()` from `calendar_client.py` to compare times across both all-day and timed events.
 
 ---
 

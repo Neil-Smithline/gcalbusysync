@@ -11,6 +11,7 @@ Runs as a scheduled cron job or macOS LaunchAgent, syncing every 15 minutes.
 - **Automatic cleanup**: when a source event is deleted, changed to "free", or cancelled, the corresponding OOO block is removed from all other calendars.
 - **Incremental sync**: uses Google Calendar's `nextSyncToken` to fetch only changed events on subsequent runs — fast and quota-friendly.
 - **Tracking via `privateExtendedProperties`**: synced blocks store the source event ID and account as private metadata (invisible in the Google Calendar UI), so they can always be found and cleaned up.
+- **Contained-event skipping**: events fully inside a larger concurrent event on the same account are not synced as OOO blocks — the outer event already covers the busy window (configurable, on by default).
 
 ## Setup
 
@@ -194,6 +195,11 @@ Full config with all options (file lives at `~/.gcalbusysync/config.yaml`):
 sync:
   days_ahead: 30    # How many days ahead to sync (default: 30)
   days_behind: 1    # How many days back to look for cleanups (default: 1)
+
+  # Skip OOO blocks for events fully contained within a larger concurrent event
+  # on the same source account (e.g., a 30-min appointment inside a 2-hour block).
+  # Default: true
+  skip_contained_events: true
 
   # ooo: controls automatic meeting decline on synced OOO blocks (optional).
   # This is the global default; individual accounts can override it (see below).

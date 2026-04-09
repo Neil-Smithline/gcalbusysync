@@ -9,6 +9,7 @@ from gcalsync.calendar_client import (
     CalendarClient,
     PROP_SOURCE_ACCOUNT,
     PROP_SOURCE_EVENT_ID,
+    _event_time_to_datetime,
     _is_busy_block,
 )
 from gcalsync.models import AccountConfig, AppConfig, OooConfig
@@ -46,6 +47,32 @@ def is_busy_source(event: dict) -> bool:
     return True
 
 
+def _build_contained_event_ids(events: list[dict]) -> set[str]:
+    """
+    Return IDs of events fully contained within a strictly larger concurrent event.
+
+    Event A is contained in event B if:
+      B.start <= A.start AND A.end <= B.end AND (B.start, B.end) != (A.start, A.end)
+
+    Only events that pass is_busy_source() are considered — transparent/cancelled
+    events are neither containers nor candidates for skipping.
+    """
+    syncable = [
+        (e, _event_time_to_datetime(e["start"]), _event_time_to_datetime(e["end"]))
+        for e in events
+        if is_busy_source(e)
+    ]
+    contained_ids: set[str] = set()
+    for event, start, end in syncable:
+        for other, other_start, other_end in syncable:
+            if event["id"] == other["id"]:
+                continue
+            if other_start <= start and end <= other_end and (other_start, other_end) != (start, end):
+                contained_ids.add(event["id"])
+                break
+    return contained_ids
+
+
 def _times_differ(block: dict, source: dict) -> bool:
     """Return True if the busy block's time window differs from the source event."""
     return (
@@ -67,6 +94,7 @@ def _process_event(
     target_accounts: list[AccountConfig],
     clients: dict[str, CalendarClient],
     global_ooo: Optional[OooConfig],
+    contained: bool = False,
 ) -> None:
     """
     For one changed source event, create, update, or delete OOO blocks
@@ -74,9 +102,12 @@ def _process_event(
 
     The effective OOO config follows the precedence rule:
       per-account override (source_account.ooo) → global default (global_ooo) → None
+
+    If contained=True, the event is fully inside a larger concurrent event and its
+    OOO block is suppressed (any existing block is deleted).
     """
     event_id = event["id"]
-    should_sync = is_busy_source(event)
+    should_sync = is_busy_source(event) and not contained
 
     # Resolve effective OOO config: per-account override takes priority over global default
     effective_ooo = source_account.ooo if source_account.ooo is not None else global_ooo
@@ -162,6 +193,7 @@ def _sync_source_account(
     time_min: datetime,
     time_max: datetime,
     global_ooo: Optional[OooConfig],
+    skip_contained_events: bool = True,
 ) -> None:
     """Fetch changed events from one source account and fan out to all targets."""
     source_client = clients[source_account.id]
@@ -192,6 +224,15 @@ def _sync_source_account(
         source_account.id, len(changed_events),
     )
 
+    contained_ids: set[str] = set()
+    if skip_contained_events:
+        contained_ids = _build_contained_event_ids(changed_events)
+        if contained_ids:
+            logger.info(
+                "Account %s: skipping %d event(s) fully contained within a larger event",
+                source_account.id, len(contained_ids),
+            )
+
     for event in changed_events:
         _process_event(
             event=event,
@@ -199,6 +240,7 @@ def _sync_source_account(
             target_accounts=target_accounts,
             clients=clients,
             global_ooo=global_ooo,
+            contained=event["id"] in contained_ids,
         )
 
     if is_full_sync:
@@ -246,6 +288,7 @@ def run_sync(config: AppConfig) -> None:
                 time_min=time_min,
                 time_max=time_max,
                 global_ooo=config.sync.ooo,
+                skip_contained_events=config.sync.skip_contained_events,
             )
         except Exception:
             logger.exception(

@@ -35,6 +35,7 @@ class SyncConfig:
     days_ahead: int = 30  # How far into the future to sync
     days_behind: int = 1  # How far into the past to look (for cleanup)
     ooo: Optional[OooConfig] = None   # Global OOO default; None = let Google use account's personal setting
+    skip_contained_events: bool = True  # Skip OOO blocks for events fully inside a larger concurrent event
 
 
 @dataclass

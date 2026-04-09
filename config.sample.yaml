@@ -6,6 +6,10 @@
 sync:
   days_ahead: 30  # How many days ahead to sync (default: 30)
   days_behind: 1  # How many days back to look for cleanup (default: 1)
+  # Skip OOO blocks for events fully contained within a larger concurrent event
+  # on the same source account (e.g., a 30-min appointment inside a 2-hour block).
+  # Default: true
+  skip_contained_events: true
 
   # ooo: controls whether synced Out of Office blocks automatically decline meetings.
   # This is the global default, applied to all accounts unless overridden per-account.
